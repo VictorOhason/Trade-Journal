@@ -1,10 +1,62 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Trade Journal</title>
+    <title>Trade Journal - Log Your Trades</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Welcome to Trade Journal</h1>
-    <p>This is a test page. It works!</p>
+    <div class="container">
+        <h1>Trade Journal</h1>
+        <h2>Log a New Trade</h2>
+        
+        <form id="tradeForm" method="post" action="/submit">
+            <fieldset>
+                <legend>Trade Entry Form</legend>
+                
+                <div class="form-group">
+                    <label for="date">Date:</label>
+                    <input type="date" id="date" name="date" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="asset">Asset/Ticker:</label>
+                    <input type="text" id="asset" name="asset" placeholder="e.g. AAPL, EURUSD" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="direction">Direction:</label>
+                    <select id="direction" name="direction" required>
+                        <option value="">-- Select --</option>
+                        <option value="Long">Long</option>
+                        <option value="Short">Short</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="quantity">Quantity:</label>
+                    <input type="number" id="quantity" name="quantity" min="1" step="1" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="entry">Entry Price:</label>
+                    <input type="number" id="entry" name="entry" step="0.01" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="exit">Exit Price:</label>
+                    <input type="number" id="exit" name="exit" step="0.01" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="comment">Comment (optional):</label>
+                    <textarea id="comment" name="comment" rows="3" placeholder="Notes about this trade..."></textarea>
+                </div>
+                
+                <button type="submit" class="btn">Log Trade</button>
+            </fieldset>
+        </form>
+    </div>
+    
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
 </html>
