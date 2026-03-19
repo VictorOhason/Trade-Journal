@@ -1,4 +1,5 @@
-from flask import Flask, render_template, request, redirect, url_for, send_file
+from flask import Flask, render_template, request, redirect, url_for, send_file, session, flash
+from functools import wraps
 import csv
 import os
 import pandas as pd
@@ -6,13 +7,52 @@ import matplotlib.pyplot as plt
 
 # This creates my flask application. (__name__) is a special python variable that means "This file"
 app = Flask(__name__)
+app.secret_key = os.urandom(24)  # session encryption key (safe for dev)
+
+# simple in-memory user credentials (for learning/demo)
+VALID_USERNAME = 'admin'
+VALID_PASSWORD = 'password123'
+
+# login-required decorator
+def login_required(func):
+    @wraps(func)
+    def wrapped(*args, **kwargs):
+        if session.get('logged_in'):
+            return func(*args, **kwargs)
+        flash('You must log in first.', 'warning')
+        return redirect(url_for('login'))
+    return wrapped
 
 # a "route" is a path in my app
 @app.route('/') #when someone visits the home page(/)
-def index():#this function is called#
+@login_required
+def index(): #this function is called#
     return render_template('index.html') # this then shows the index.html files from the templates folder
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form.get('username', '').strip()
+        password = request.form.get('password', '').strip()
+
+        if username == VALID_USERNAME and password == VALID_PASSWORD:
+            session['logged_in'] = True
+            session['username'] = username
+            flash('Logged in successfully.', 'success')
+            return redirect(url_for('index'))
+
+        flash('Invalid username or password.', 'danger')
+
+    return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    flash('Logged out successfully.', 'info')
+    return redirect(url_for('login'))
+
 @app.route('/submit', methods = ['POST']) # Listens for POST requests to /submit
+@login_required
 def submit_trade(): # function to get and store data in csv file format
     #get the form data
     date = request.form['date']
@@ -43,6 +83,7 @@ def submit_trade(): # function to get and store data in csv file format
     return redirect(url_for('show_dashboard'))
 
 @app.route('/dashboard')
+@login_required
 def show_dashboard():
     # read all trades from CSV with Pandas
     charts_dir = os.path.join('static', 'charts')
@@ -140,5 +181,6 @@ def show_dashboard():
                            charts=chart_paths)
 
 @app.route('/download')
+@login_required
 def download_csv():
     return send_file('data/trades.csv', as_attachment=True, download_name='trades.csv', mimetype='text/csv')
