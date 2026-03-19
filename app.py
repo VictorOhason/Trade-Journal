@@ -18,27 +18,25 @@ def submit_trade(): # function to get and store data in csv file format
     quantity = request.form['quantity']
     entry = request.form['entry']
     exit_price = request.form['exit']
-    comment = request.form['comment']
+    comment = request.form.get('comment', '')
     
-    # Cacluate profit 
-    # Profit = (Exit - Entry)* Quantity
-    # for shorts , profit is negative if price goes long
-    
+    # Calculate profit
+    # Profit = (Exit - Entry) * Quantity, Long positive when price rises, Short reversed
     entry_float = float(entry)
     exit_float = float(exit_price)
-    quantity_float =float(quantity)
+    quantity_float = float(quantity)
     
     if direction == 'Long':
         profit = (exit_float - entry_float) * quantity_float
-    else: #aka short 
-        profit = (entry_float - exit_float) *quantity_float
+    else:  # Short
+        profit = (entry_float - exit_float) * quantity_float
         
-    # writing to csv in append mode
-    with open('data/trades.csv', 'a',newline='') as f:
+    # Append a proper row to CSV (use exit_price once, no duplicate exit field)
+    with open('data/trades.csv', 'a', newline='') as f:
         writer = csv.writer(f)
-        writer.writerow([date, asset, direction, quantity, entry, exit, exit_price, profit, comment])
+        writer.writerow([date, asset, direction, quantity, entry, exit_price, profit, comment])
         
-    # redirect to dashboard to see analyzed data
+    # Redirect to dashboard to see the newly logged trade
     return redirect(url_for('show_dashboard'))
 
 @app.route('/dashboard')
