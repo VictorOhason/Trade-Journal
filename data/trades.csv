@@ -1,1 +1,2 @@
-date,asset,direction,quantity,entry,profit,comment2026-03-19,AAPL,Long,10,150,Use exit() or Ctrl-Z plus Return to exit,155,50.0,test Log
+date,asset,direction,quantity,entry,exit,profit,comment
+2026-03-19,AAPL,Long,10,150,155,50.0,First real test log

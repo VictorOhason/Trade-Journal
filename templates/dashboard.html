@@ -9,11 +9,46 @@
         <h1>Trade Journal</h1>
         <h2>Dashboard</h2>
         
-        <div style="margin-bottom: 20px;">
+        <div style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
             <a href="/" style="display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 4px;">← Log New Trade</a>
+            <a href="/download" style="display: inline-block; padding: 10px 20px; background-color: #007ACC; color: white; text-decoration: none; border-radius: 4px;">Download CSV</a>
         </div>
-        
+
         {% if trades %}
+            <div class="stats">
+                <div class="stat-card">Total Trades: <strong>{{ total_trades }}</strong></div>
+                <div class="stat-card">Total Profit: <strong>{{ total_profit }}</strong></div>
+                <div class="stat-card">Win Rate: <strong>{{ win_rate }}%</strong></div>
+                <div class="stat-card">Average Profit: <strong>{{ avg_profit }}</strong></div>
+            </div>
+
+            <div class="charts">
+                {% if charts.profit_by_asset %}
+                    <div class="chart-card">
+                        <h3>Profit by Asset</h3>
+                        <img src="{{ url_for('static', filename=charts.profit_by_asset) }}" alt="Profit by Asset" />
+                    </div>
+                {% endif %}
+                {% if charts.cum_profit %}
+                    <div class="chart-card">
+                        <h3>Cumulative Profit</h3>
+                        <img src="{{ url_for('static', filename=charts.cum_profit) }}" alt="Cumulative Profit" />
+                    </div>
+                {% endif %}
+                {% if charts.profit_hist %}
+                    <div class="chart-card">
+                        <h3>Profit Distribution</h3>
+                        <img src="{{ url_for('static', filename=charts.profit_hist) }}" alt="Profit Distribution" />
+                    </div>
+                {% endif %}
+                {% if charts.win_ratio %}
+                    <div class="chart-card">
+                        <h3>Win/Loss Ratio</h3>
+                        <img src="{{ url_for('static', filename=charts.win_ratio) }}" alt="Win Loss Ratio" />
+                    </div>
+                {% endif %}
+            </div>
+
             <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
                 <thead>
                     <tr style="background-color: #4CAF50; color: white;">
