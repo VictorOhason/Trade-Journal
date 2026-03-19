@@ -9,7 +9,54 @@ app = Flask(__name__)
 def index():#this function is called#
     return render_template('index.html') # this then shows the index.html files from the templates folder
 
+@app.route('/submit', methods = ['POST']) # Listens for POST requests to /submit
+def submit_trade(): # function to get and store data in csv file format
+    #get the form data
+    date = request.form['date']
+    asset = request.form['asset']
+    direction = request.form['direction']
+    quantity = request.form['quantity']
+    entry = request.form['entry']
+    exit_price = request.form['exit']
+    comment = request.form['comment']
+    
+    # Cacluate profit 
+    # Profit = (Exit - Entry)* Quantity
+    # for shorts , profit is negative if price goes long
+    
+    entry_float = float(entry)
+    exit_float = float(exit_price)
+    quantity_float =float(quantity)
+    
+    if direction == 'Long':
+        profit = (exit_float - entry_float) * quantity_float
+    else: #aka short 
+        profit = (entry_float - exit_float) *quantity_float
+        
+    # writing to csv in append mode
+    with open('data/trades.csv', 'a',newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow([date, asset, direction, quantity, entry, exit, exit_price, profit, comment])
+        
+    # redirect to dashboard to see analyzed data
+    return redirect(url_for('show_dashboard'))
 
+@app.route('/dashboard')
+def show_dashboard():
+    # read all trades from csv
+    trades = []
+    try:
+        with open('data/trades.csv', 'r') as f:
+            reader = csv.reader(f)
+            next(reader) # skips the header row
+            for row in reader:
+                if row: # making sure row isnt empty
+                    trades.append(row)
+    except:
+        trades = []
+    return render_template('dashboard.html', trades=trades)
+                
+    
 
 
 
